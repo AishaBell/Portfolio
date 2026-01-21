@@ -129,3 +129,47 @@ Install and run Hydra with a custom wordlist:<br>
 4. Search Splunk for authentication logs: <br>
 
             index=main sourcetype=linux_secure ("Failed password" OR "Accepted password")
+
+STEP 4: Creating a Brute Force Detection Alert <br>
+Detection of multiple failed SSH login attempts and trigger a real-time alert. <br>
+
+Verify failed login events:<br>
+
+            index=* "Failed password"
+2. Generate multiple failed SSH attempts manually and Use this detection SPL query for alerts generated. Save as Alert (Real-Time) and configure trigger conditions. <br>
+
+            index=main sourcetype=linux_secure "Failed password" | rex "from (?<src_ip>\d+\.\d+\.\d+\.\d+)" | stats count AS failed_attempts by src_ip | where failed_attempts >= 3
+3. Re-run brute force attempts to trigger the alert. <br>
+
+STEP 5: Mitigation and Defensive Controls <br>
+<br>
+The success of a brute force attack may be an indication of a weak password policy implemented or misconfigurations of mitigation rule. Therefore, it is important to implement host-based controls to stop the attacker and validate the effectiveness of the mitigation controls. <br>
+
+Hardening and Blocking <br>
+<br>
+Generate SSH keys: It is important to generate this key as it is an important security practice for mitigation. This replacing password-based authentication with a more secure, cryptographic method and nearly impossible for attackers to crack this mathematically complex key <br>
+
+            ssh-keygen
+2. Harden SSH configuration (/etc/ssh/sshd_config): <br>
+
+            Enable public key authentication
+            Disable password authentication
+            Disable root login
+3. Block attacker IP: <br>
+
+            sudo iptables -A INPUT -s 10.44.11.33 -j DROP
+4. Configure Fail2Ban: This configuration is crucial because it automatically detects and blocks malicious IP addresses attempting repeated failed logins and reducing server’s attack surface <br>
+
+            sudo nano /etc/fail2ban/jail.local
+
+            maxretry = 2
+            findtime = 3600
+            bantime = 600
+            ignoreself = false
+            Restart Fail2Ban:
+
+            sudo systemctl restart fail2ban
+
+5. Monitor Fail2Ban logs:<br>
+
+            sudo tail -f /var/log/fail2ban.log
