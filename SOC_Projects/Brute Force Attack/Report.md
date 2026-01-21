@@ -46,5 +46,6 @@ STEP 1: Installation of Splunk Enterprise on Kali <br>
             cd Downloads 
             ls
 3. Install Splunk: Run the script <br>
+
             sudo dpkg -i splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb
 4. Change to the Splunk binary directory:
