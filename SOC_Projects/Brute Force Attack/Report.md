@@ -48,4 +48,35 @@ STEP 1: Installation of Splunk Enterprise on Kali <br>
 3. Install Splunk: Run the script <br>
 
             sudo dpkg -i splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb
-4. Change to the Splunk binary directory:
+4. Change to the Splunk binary directory: <br>
+
+            cd /opt/splunk/bin
+5. Start Splunk: <br>
+
+            sudo ./splunk start
+6. Accept the license agreement when prompted and create Username and password <br>
+
+7. Copy the displayed IP address and port (default 8000). Login with credentials created during startup and Confirm that the Splunk Enterprise Dashboard loads successfully <br>
+
+            http://127.0.0.1:8000
+
+STEP 2: Installion and Configuration of Splunk Universal Forwarder <br>
+
+Splunk Universal Forwarder is installed and configureed to send Linux authentication logs to Splunk instance. <br>
+
+Log in to splunk.com and download the Splunk Universal Forwarder (.deb) or copy the wget link into Kali. <br>
+Verify the downloaded file size (30–50 MB): <br>
+
+            ls -lh splunkforwarder-10.0.2-e2d18b4767e9-linux-amd64.deb
+3. Install the forwarder: <br>
+
+            sudo dpkg -i splunkforwarder-10.0.2-e2d18b4767e9-linux-amd64.deb
+4. Start the forwarder and accept the license and create Username and password <br>
+
+            sudo /opt/splunkforwarder/bin/splunk start --accept-license
+5. Point the forwarder to the Splunk server: The IP required in the stage is the IP address of the Victim machine. <br>
+
+            sudo /opt/splunkforwarder/bin/splunk add forward-server 192.168.123.20:9997
+6. Add monitoring for authentication logs: This command instructs the Splunk Universal Forwarder to monitor the system’s authentication log file in real time and store them in /var/log/auth.log <br>
+
+            sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/auth.log
