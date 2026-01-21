@@ -109,7 +109,7 @@ Forwarder Password Enforcement Fix <br>
 13. Edit user-seed configuration and save. <br>
 
             sudo nano /opt/splunkforwarder/etc/system/local/user-seed.conf
-    [user_info]
+            [user_info]
             USERNAME = admin
             PASSWORD = Password!
 14. Restart the forwarder and re-link it to Splunk using the new credentials. <br>
@@ -170,6 +170,39 @@ Generate SSH keys: It is important to generate this key as it is an important se
 
             sudo systemctl restart fail2ban
 
-5. Monitor Fail2Ban logs:<br>
+5. Monitor Fail2Ban logs: <br>
 
             sudo tail -f /var/log/fail2ban.log
+6. Add Fail2Ban logs to Splunk: <br>
+
+            sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log -index main -sourcetype fail2ban
+7. Run mitigation SPL query: <br>
+
+            index=main sourcetype=fail2ban "Ban" | rex "\[(?<jail>\w+)\] Ban (?<banned_ip>\d+\.\d+\.\d+\.\d+)" | stats count by banned_ip, jail | rename banned_ip as "Neutralized Attacker", jail as "Protocol", count as "Attempts Blocked"
+
+Why This Project Matters <br>
+<br>
+This project reflects a real-world SOC workflow, making it highly relevant to defensive security operations. It demonstrates end-to-end incident handling and reduces dwell time when real-time alerts for brute-force activity are configured properly. SSH brute-force attacks are among the most frequent threats against systems, making this detection use case highly practical. <br>
+
+Key Takeaways <br>
+Logs tell the full attack story when analyzed properly. <br>
+Detection without context is incomplete. <br>
+Real-time alerting is critical to enables security teams to respond to attacks. <br>
+Detection alone is not enough but implementing preventive strategies closes the loop between visibility and response. <br>
+Dashboards enhance situational awareness SOC analysts during active incidents. <br>
+<br>
+Conclusion <br>
+Between the initial setup and the final mitigation phase, our Splunk-based lab successfully detected and responded to coordinated SSH brute-force activity on the victim machine. <br>
+
+By: <br>
+
+Installing and configuring Splunk Enterprise and Universal Forwarder <br>
+Ingesting and monitoring Linux authentication logs (auth.log) <br>
+Simulating SSH brute-force attacks using Hydra <br>
+Building real-time alerts to detect repeated failed logins <br>
+Implementing mitigation through Fail2Ban, firewall rules, and SSH hardening <br>
+Visualizing results via Dashboards and reports <br>
+
+We transformed raw log data into actionable security intelligence, demonstrating a full SOC workflow from detection to response. <br>
+
+True SOC defense is not just alert response, but designing systems that detects and prevents compromise. <br>
