@@ -173,12 +173,19 @@ Generate SSH keys: It is important to generate this key as it is an important se
 5. Monitor Fail2Ban logs: <br>
 
             sudo tail -f /var/log/fail2ban.log
+            
+    ![Execute](Screenshots/BF7.png)
+                    Fail2Ban ban event in terminal. <br
+                    >
 6. Add Fail2Ban logs to Splunk: <br>
 
             sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/fail2ban.log -index main -sourcetype fail2ban
 7. Run mitigation SPL query: <br>
 
             index=main sourcetype=fail2ban "Ban" | rex "\[(?<jail>\w+)\] Ban (?<banned_ip>\d+\.\d+\.\d+\.\d+)" | stats count by banned_ip, jail | rename banned_ip as "Neutralized Attacker", jail as "Protocol", count as "Attempts Blocked"
+
+    ![Execute](Screenshots/BF8.png)
+                Splunk dashboard showing banned IPs and blocked attempts. <br>
 
 Why This Project Matters <br>
 <br>
