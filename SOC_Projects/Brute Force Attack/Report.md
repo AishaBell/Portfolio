@@ -80,3 +80,52 @@ Verify the downloaded file size (30–50 MB): <br>
 6. Add monitoring for authentication logs: This command instructs the Splunk Universal Forwarder to monitor the system’s authentication log file in real time and store them in /var/log/auth.log <br>
 
             sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/auth.log
+Permissions and Log Availability Fixes <br>
+
+7. Fix ownership permissions: This changes ownership of the Splunk Forwarder files from root to the kali user (your victim machine). It is important to do this because Splunk Forwarder needs write access to its own directories <br>
+
+            sudo chown -R kali:kali /opt/splunkforwarder ls -l /opt/splunkforwarder
+8. Install and enable rsyslog: The version of kali used in this project does not have the /var/log/auth.log.The rsyslog is installed for this purpose <br>
+
+            sudo apt update && sudo apt install rsyslog -y 
+            sudo systemctl start rsyslog 
+            sudo systemctl enable rsyslog
+9. Verify auth.log exists and Update permissions its permission <br>
+
+            ls -l /var/log/auth.log
+            sudo chmod 644 /var/log/auth.log
+10. Re-add the log monitor: <br>
+
+            sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/auth.log
+
+Forwarder Password Enforcement Fix <br>
+11. Restart the forwarder: <br>
+
+            sudo /opt/splunkforwarder/bin/splunk start --accept-license --answer-yes
+12. If password enforcement error appears, stop the forwarder and remove the password file: <br>
+
+            sudo /opt/splunkforwarder/bin/splunk stop
+            sudo rm /opt/splunkforwarder/etc/passwd
+13. Edit user-seed configuration and save. <br>
+
+            sudo nano /opt/splunkforwarder/etc/system/local/user-seed.conf
+    [user_info]
+            USERNAME = admin
+            PASSWORD = Password!
+14. Restart the forwarder and re-link it to Splunk using the new credentials. <br>
+
+STEP 3: Simulating an SSH Brute Force Attack <br>
+Generate failed and successful SSH login events for detection testing. <br>
+
+Install and run Hydra with a custom wordlist:<br>
+
+            hydra -l kali -P /home/kali/shortlist.txt ssh://<VICTIM_IP>:<PORT>
+2. Allow SSH traffic: <br>
+
+            sudo ufw allow ssh
+3. Execute brute force with limited threads. <br>
+
+            hydra -l kali -P /home/kali/shortlist.txt -t 4 -f ssh://<VICTIM_IP>:
+4. Search Splunk for authentication logs: <br>
+
+            index=main sourcetype=linux_secure ("Failed password" OR "Accepted password")
