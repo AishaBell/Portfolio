@@ -15,8 +15,7 @@ Project Overview <br>
 <br>
 This project demonstrates the end‑to‑end deployment of a Security Information and Event Management (SIEM) solution using Splunk Enterprise to detect SSH brute‑force attacks in a Linux environment. The lab covers the installation and configuration of Splunk Enterprise and the Splunk Universal Forwarder, forwarding authentication logs from a Kali Linux system, simulating brute‑force login attempts using Hydra, and creating a real‑time alert to identify malicious behavior. Mitigation techniques were applied using Fail2Ban, firewall rules, and SSH hardening. <br>
 
-The objective is to replicate a real SOC workflow: <br> 
-log ingestion → detection → alerting → response → verification. <br>
+The objective is to replicate a real SOC workflow: log ingestion → detection → alerting → response → verification. <br>
 
 Tools and Requirements <br>
 
