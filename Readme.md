@@ -1,0 +1,1 @@
+This portfolio is for my soc analysis
