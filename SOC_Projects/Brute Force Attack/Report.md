@@ -37,9 +37,11 @@ Open TCP ports: <br>
 <br>
 STEP 1: Installation of Splunk Enterprise on Kali <br>
 
-Using the Kali browser, navigate to www.splunk.com, log in, and download Splunk Enterprise for Linux (.deb). <br>
-Open a terminal and navigate to the Downloads directory: <br>
+1. Using the Kali browser, navigate to www.splunk.com, log in, and download Splunk Enterprise for Linux (.deb). <br>
+2. Open a terminal and navigate to the Downloads directory: <br>
  
             cd Downloads 
             ls
-            sudo dpkg -i splunkforwarder-10.0.2-e2d18b4767e9-linux-amd64.deb
+3. Install Splunk: Run the script <br>
+            sudo dpkg -i splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb <br>
+4. Change to the Splunk binary directory:
