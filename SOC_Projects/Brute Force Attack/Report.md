@@ -4,7 +4,7 @@ Project Type: Brute Force Attack · SOC Fundamentals <br>
 Tools: Kali, Hydra, Splunk, Splunk Forwarder <br>
 Date: January 18, 2026 <br>
 
-                        Analyst: Aisha B. Bello <br>
+Analyst: Aisha B. Bello <br>
 
 Confidentiality Notice:<br>
 
