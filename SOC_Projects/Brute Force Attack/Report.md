@@ -59,6 +59,8 @@ STEP 1: Installation of Splunk Enterprise on Kali <br>
 7. Copy the displayed IP address and port (default 8000). Login with credentials created during startup and Confirm that the Splunk Enterprise Dashboard loads successfully <br>
 
             http://127.0.0.1:8000
+    ![Execute](Screenshots/BF1.png)
+                            Splunk Web login page and dashboard after first login.
 
 STEP 2: Installion and Configuration of Splunk Universal Forwarder <br>
 
@@ -80,6 +82,8 @@ Verify the downloaded file size (30–50 MB): <br>
 6. Add monitoring for authentication logs: This command instructs the Splunk Universal Forwarder to monitor the system’s authentication log file in real time and store them in /var/log/auth.log <br>
 
             sudo /opt/splunkforwarder/bin/splunk add monitor /var/log/auth.log
+    ![Execute](Screenshots/BF2.png)
+                                Successful forwarder connection and monitor addition output
 Permissions and Log Availability Fixes <br>
 
 7. Fix ownership permissions: This changes ownership of the Splunk Forwarder files from root to the kali user (your victim machine). It is important to do this because Splunk Forwarder needs write access to its own directories <br>
@@ -112,7 +116,10 @@ Forwarder Password Enforcement Fix <br>
             [user_info]
             USERNAME = admin
             PASSWORD = Password!
+
 14. Restart the forwarder and re-link it to Splunk using the new credentials. <br>
+        ![Execute](Screenshots/BF3.png)
+                                Forwarder successfully connected in Splunk UI
 
 STEP 3: Simulating an SSH Brute Force Attack <br>
 Generate failed and successful SSH login events for detection testing. <br>
@@ -129,6 +136,8 @@ Install and run Hydra with a custom wordlist:<br>
 4. Search Splunk for authentication logs: <br>
 
             index=main sourcetype=linux_secure ("Failed password" OR "Accepted password")
+    ![Execute](Screenshots/BF4.png)      ![Execute](Screenshots/BF5.png)
+                                Hydra attack output and corresponding Splunk log entries.   
 
 STEP 4: Creating a Brute Force Detection Alert <br>
 Detection of multiple failed SSH login attempts and trigger a real-time alert. <br>
@@ -139,7 +148,10 @@ Verify failed login events:<br>
 2. Generate multiple failed SSH attempts manually and Use this detection SPL query for alerts generated. Save as Alert (Real-Time) and configure trigger conditions. <br>
 
             index=main sourcetype=linux_secure "Failed password" | rex "from (?<src_ip>\d+\.\d+\.\d+\.\d+)" | stats count AS failed_attempts by src_ip | where failed_attempts >= 3
+
 3. Re-run brute force attempts to trigger the alert. <br>
+        ![Execute](Screenshots/BF6.png)
+                            Alert configuration page and triggered alert in Splunk.
 
 STEP 5: Mitigation and Defensive Controls <br>
 <br>
@@ -150,14 +162,17 @@ Hardening and Blocking <br>
 Generate SSH keys: It is important to generate this key as it is an important security practice for mitigation. This replacing password-based authentication with a more secure, cryptographic method and nearly impossible for attackers to crack this mathematically complex key <br>
 
             ssh-keygen
+
 2. Harden SSH configuration (/etc/ssh/sshd_config): <br>
 
             Enable public key authentication
             Disable password authentication
             Disable root login
+
 3. Block attacker IP: <br>
 
             sudo iptables -A INPUT -s 10.44.11.33 -j DROP
+
 4. Configure Fail2Ban: This configuration is crucial because it automatically detects and blocks malicious IP addresses attempting repeated failed logins and reducing server’s attack surface <br>
 
             sudo nano /etc/fail2ban/jail.local
@@ -173,9 +188,9 @@ Generate SSH keys: It is important to generate this key as it is an important se
 5. Monitor Fail2Ban logs: <br>
 
             sudo tail -f /var/log/fail2ban.log
-            
+
     ![Execute](Screenshots/BF7.png)
-                    Fail2Ban ban event in terminal. <br
+                            Fail2Ban ban event in terminal. <br
                     >
 6. Add Fail2Ban logs to Splunk: <br>
 
@@ -185,7 +200,7 @@ Generate SSH keys: It is important to generate this key as it is an important se
             index=main sourcetype=fail2ban "Ban" | rex "\[(?<jail>\w+)\] Ban (?<banned_ip>\d+\.\d+\.\d+\.\d+)" | stats count by banned_ip, jail | rename banned_ip as "Neutralized Attacker", jail as "Protocol", count as "Attempts Blocked"
 
     ![Execute](Screenshots/BF8.png)
-                Splunk dashboard showing banned IPs and blocked attempts. <br>
+                            Splunk dashboard showing banned IPs and blocked attempts. <br>
 
 Why This Project Matters <br>
 <br>
