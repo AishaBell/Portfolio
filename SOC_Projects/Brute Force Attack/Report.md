@@ -4,7 +4,7 @@ Project Type: Brute Force Attack · SOC Fundamentals <br>
 Tools: Kali, Hydra, Splunk, Splunk Forwarder <br>
 Date: January 18, 2026 <br>
 
-Analyst: Aisha B. Bello <br>
+                        Analyst: Aisha B. Bello <br>
 
 Confidentiality Notice:<br>
 
@@ -60,7 +60,7 @@ STEP 1: Installation of Splunk Enterprise on Kali <br>
 
             http://127.0.0.1:8000
     ![Execute](Screenshots/BF1.png)
-                            Splunk Web login page and dashboard after first login.
+                            Splunk Web login page and dashboard after first login. 
 
 STEP 2: Installion and Configuration of Splunk Universal Forwarder <br>
 
